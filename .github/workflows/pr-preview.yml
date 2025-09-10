@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       pr-number:
-        description: 'Pull request number'
+        description: "Pull request number"
         required: true
         type: number
 
@@ -26,11 +26,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          static_site_generator: next
       - name: Install dependencies
         run: npm ci
-      - name: Build site
-        run: |
-          npm run build
+      - name: Build & export site
+        env:
+          NEXT_PUBLIC_BASE_PATH: pr-${{ inputs.pr-number }}
+        run: npm run build && npx next export
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
