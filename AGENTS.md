@@ -42,4 +42,4 @@ Note: `package-lock.json` is present; prefer `npm`. Use Node 18.17+.
 ## Agent-Specific Instructions
 - Follow existing patterns in `components/ui` and `app/`. Keep changes minimal and focused.
 - Prefer `npm`; avoid adding new dependencies without discussion.
-- Use `@/*` aliases, Tailwind for styling, and keep code TypeScript‑strict.
+- Use `@/*` aliases, Tailwind for styling, and keep code TypeScript-strict.
