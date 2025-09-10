@@ -7,11 +7,12 @@
 - `public/`: Static assets (images, logos).
 - `styles/`: Additional global CSS.
 - Config: `next.config.mjs`, `tsconfig.json`, `postcss.config.mjs`, `components.json` (shadcn/ui).
+ - Docs: `docs/` for guides on CI/CD, running locally, and adding components.
 
 ## Build, Test, and Development Commands
 - `npm run dev`: Start local dev server.
-- `npm run build`: Production build.
-- `npm start`: Serve the production build.
+- `npm run build`: Production build (static export to `out/`).
+- `npm start`: Not used with static export. Use a static server to preview `out/` (e.g., `npx serve out`).
 - `npm run lint`: Run Next.js ESLint. Fix issues before opening a PR.
 Note: `package-lock.json` is present; prefer `npm`. Use Node 18.17+.
 
@@ -21,6 +22,7 @@ Note: `package-lock.json` is present; prefer `npm`. Use Node 18.17+.
 - Naming: Components PascalCase (`RAGDashboard`), files kebab/camel case (`theme-provider.tsx`, `utils.ts`).
 - Styling: Tailwind CSS v4. Compose classes with `cn` from `lib/utils.ts`; avoid arbitrary duplication.
 - Imports: Use path alias `@/*` (see `tsconfig.json`). Avoid `any`; prefer explicit types.
+ - Components: Prefer server components by default; add `"use client"` when using state/effects or browser APIs.
 
 ## Testing Guidelines
 - No test runner configured yet. If adding tests:
@@ -38,8 +40,13 @@ Note: `package-lock.json` is present; prefer `npm`. Use Node 18.17+.
 ## Security & Configuration Tips
 - Do not commit secrets. Use environment variables; expose only with `NEXT_PUBLIC_` when needed.
 - `next.config.mjs` currently ignores TypeScript/ESLint errors during builds—still fix locally before merging.
+ - Static export is enabled (`output: "export"`). GitHub Pages builds set `NEXT_PUBLIC_BASE_PATH` to match the repository path.
 
 ## Agent-Specific Instructions
 - Follow existing patterns in `components/ui` and `app/`. Keep changes minimal and focused.
 - Prefer `npm`; avoid adding new dependencies without discussion.
 - Use `@/*` aliases, Tailwind for styling, and keep code TypeScript-strict.
+
+## Documentation
+- Start here: `docs/github-workflow.md`, `docs/running-the-application.md`, `docs/adding-a-new-component.md`.
+- Keep docs updated when changing workflows, scripts, or component patterns.

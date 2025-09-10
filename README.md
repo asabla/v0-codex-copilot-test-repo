@@ -1,35 +1,67 @@
-# RAG pipeline dashboard
+# RAG Pipeline Dashboard
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Modern Next.js (App Router) dashboard for monitoring and exploring a RAG pipeline. Built with TypeScript, Tailwind CSS v4, and shadcn/ui-style primitives.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/asablas-projects/v0-rag-pipeline-dashboard)
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://v0-rag-pipeline-dashboard.vercel.app/)
 [![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/KBURx0iiPsX)
 
-## Overview
+## Live
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+- Vercel: https://v0-rag-pipeline-dashboard.vercel.app/
+- GitHub Pages: https://asabla.github.io/v0-codex-copilot-test-repo/
 
-This application is pushed on both vercel and github pages
+## Stack
 
-- [vercel](https://v0-rag-pipeline-dashboard.vercel.app/)
-- [Github pages](https://asabla.github.io/v0-codex-copilot-test-repo/)
+- Next.js 14 (App Router, static export)
+- TypeScript, React 18
+- Tailwind CSS v4, `tailwind-merge`, `clsx`
+- Radix UI primitives and shadcn/ui-like component patterns
 
-## Deployment
+## Quick Start
 
-Your project is live at:
+Prereqs: Node 18.17+ and npm.
 
-**[https://vercel.com/asablas-projects/v0-rag-pipeline-dashboard](https://vercel.com/asablas-projects/v0-rag-pipeline-dashboard)**
+- Install: `npm ci`
+- Dev server: `npm run dev` then open `http://localhost:3000`
 
-## Build your app
+### Production build
 
-Continue building your app on:
+This repo is configured for static export (`output: "export"`).
 
-**[https://v0.app/chat/projects/KBURx0iiPsX](https://v0.app/chat/projects/KBURx0iiPsX)**
+- Build: `npm run build` (emits `out/`)
+- Preview locally: `npx serve out` or any static file server
 
-## How It Works
+Note: `next start` targets the Node server output and is not used with static export.
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## Project Structure
+
+- `app/` – App Router entry (`layout.tsx`, `page.tsx`), global styles in `app/globals.css`
+- `components/` – Reusable UI (`components/ui/*` primitives, `components/theme-provider.tsx`)
+- `lib/` – Utilities (e.g., `lib/utils.ts` with `cn`)
+- `public/` – Static assets
+- `styles/` – Additional global CSS
+- Config – `next.config.mjs`, `tsconfig.json`, `postcss.config.mjs`, `components.json`
+
+## CI/CD
+
+This project deploys to GitHub Pages on pushes to `main` and supports manual PR previews.
+
+- Workflows live in `.github/workflows/*`
+- Pages deploy sets `NEXT_PUBLIC_BASE_PATH` automatically so assets resolve under the repo path
+
+See `docs/github-workflow.md` for details.
+
+## Adding Components
+
+Follow the existing patterns under `components/ui` with Tailwind utility classes and `cn` for composition. Prefer server components; add `"use client"` when using state, effects, or browser APIs.
+
+See `docs/adding-a-new-component.md` for a step-by-step guide.
+
+## Development
+
+- Lint: `npm run lint`
+- Tests: `npm run test` (Vitest)
+
+## Notes
+
+- Built and iterated with [v0.app](https://v0.app). Changes from v0 may sync here.
