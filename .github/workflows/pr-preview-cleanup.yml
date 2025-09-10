@@ -1,0 +1,27 @@
+name: Cleanup PR Preview
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Remove preview folder
+        run: |
+          git rm -r --ignore-unmatch pr-${{ github.event.pull_request.number }}
+          git commit -m "chore: remove preview for PR #${{ github.event.pull_request.number }}" || echo "No changes"
+          git push origin gh-pages
