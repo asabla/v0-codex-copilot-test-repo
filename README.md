@@ -10,6 +10,11 @@
 This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
 Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
 
+This application is pushed on both vercel and github pages
+
+- [vercel](https://v0-rag-pipeline-dashboard.vercel.app/)
+- [Github pages](https://asabla.github.io/v0-codex-copilot-test-repo/)
+
 ## Deployment
 
 Your project is live at:
