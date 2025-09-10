@@ -5,9 +5,41 @@
 name: Deploy Next.js site to Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the default branch, but only when relevant files change
   push:
     branches: ["main"]
+    paths:
+      # Next.js application source and assets
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'public/**'
+      - 'styles/**'
+      # Config and build-related files that affect the app
+      - 'next.config.mjs'
+      - 'tsconfig.json'
+      - 'postcss.config.mjs'
+      - 'components.json'
+      - 'package.json'
+      - 'package-lock.json'
+      # Workflow changes should also trigger a deploy
+      - '.github/workflows/**'
+  # Also build on PRs to main when relevant files change
+  pull_request:
+    branches: ["main"]
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'public/**'
+      - 'styles/**'
+      - 'next.config.mjs'
+      - 'tsconfig.json'
+      - 'postcss.config.mjs'
+      - 'components.json'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -82,6 +114,7 @@ jobs:
 
   # Deployment job
   deploy:
+    if: github.event_name == 'push'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
