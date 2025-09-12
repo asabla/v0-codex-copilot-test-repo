@@ -56,10 +56,10 @@ const tokenUsageData = [
 ];
 
 const processingStages = [
-  { name: "Ingestion", value: 25, color: "hsl(var(--chart-1))" },
-  { name: "Chunking", value: 20, color: "hsl(var(--chart-2))" },
-  { name: "Embedding", value: 30, color: "hsl(var(--chart-3))" },
-  { name: "Indexing", value: 25, color: "hsl(var(--chart-4))" },
+  { name: "Ingestion", value: 25, color: "var(--chart-1)" },
+  { name: "Chunking", value: 20, color: "var(--chart-2)" },
+  { name: "Embedding", value: 30, color: "var(--chart-3)" },
+  { name: "Indexing", value: 25, color: "var(--chart-4)" },
 ];
 
 const requestMetrics = [
@@ -197,39 +197,20 @@ export default function RAGDashboard() {
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={queueData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="hsl(var(--border))"
-                  />
-                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="name" stroke="var(--muted-foreground)" />
+                  <YAxis stroke="var(--muted-foreground)" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
                       borderRadius: "6px",
                     }}
                   />
-                  <Bar
-                    dataKey="pending"
-                    stackId="a"
-                    fill="hsl(var(--chart-2))"
-                  />
-                  <Bar
-                    dataKey="processing"
-                    stackId="a"
-                    fill="hsl(var(--chart-5))"
-                  />
-                  <Bar
-                    dataKey="completed"
-                    stackId="a"
-                    fill="hsl(var(--chart-1))"
-                  />
-                  <Bar
-                    dataKey="failed"
-                    stackId="a"
-                    fill="hsl(var(--chart-3))"
-                  />
+                  <Bar dataKey="pending" stackId="a" fill="var(--chart-2)" />
+                  <Bar dataKey="processing" stackId="a" fill="var(--chart-5)" />
+                  <Bar dataKey="completed" stackId="a" fill="var(--chart-1)" />
+                  <Bar dataKey="failed" stackId="a" fill="var(--chart-3)" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -243,16 +224,13 @@ export default function RAGDashboard() {
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={tokenUsageData}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="hsl(var(--border))"
-                  />
-                  <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis stroke="hsl(var(--muted-foreground))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="time" stroke="var(--muted-foreground)" />
+                  <YAxis stroke="var(--muted-foreground)" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
                       borderRadius: "6px",
                     }}
                   />
@@ -260,16 +238,16 @@ export default function RAGDashboard() {
                     type="monotone"
                     dataKey="input"
                     stackId="1"
-                    stroke="hsl(var(--chart-1))"
-                    fill="hsl(var(--chart-1))"
+                    stroke="var(--chart-1)"
+                    fill="var(--chart-1)"
                     fillOpacity={0.6}
                   />
                   <Area
                     type="monotone"
                     dataKey="output"
                     stackId="1"
-                    stroke="hsl(var(--chart-5))"
-                    fill="hsl(var(--chart-5))"
+                    stroke="var(--chart-5)"
+                    fill="var(--chart-5)"
                     fillOpacity={0.6}
                   />
                 </AreaChart>
@@ -303,8 +281,8 @@ export default function RAGDashboard() {
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
                       borderRadius: "6px",
                     }}
                   />
@@ -338,21 +316,18 @@ export default function RAGDashboard() {
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={requestMetrics}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="hsl(var(--border))"
-                  />
-                  <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis yAxisId="left" stroke="hsl(var(--muted-foreground))" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="time" stroke="var(--muted-foreground)" />
+                  <YAxis yAxisId="left" stroke="var(--muted-foreground)" />
                   <YAxis
                     yAxisId="right"
                     orientation="right"
-                    stroke="hsl(var(--muted-foreground))"
+                    stroke="var(--muted-foreground)"
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
+                      backgroundColor: "var(--card)",
+                      border: "1px solid var(--border)",
                       borderRadius: "6px",
                     }}
                   />
@@ -360,17 +335,17 @@ export default function RAGDashboard() {
                     yAxisId="left"
                     type="monotone"
                     dataKey="requests"
-                    stroke="hsl(var(--chart-1))"
+                    stroke="var(--chart-1)"
                     strokeWidth={2}
-                    dot={{ fill: "hsl(var(--chart-1))" }}
+                    dot={{ fill: "var(--chart-1)" }}
                   />
                   <Line
                     yAxisId="right"
                     type="monotone"
                     dataKey="latency"
-                    stroke="hsl(var(--chart-3))"
+                    stroke="var(--chart-3)"
                     strokeWidth={2}
-                    dot={{ fill: "hsl(var(--chart-3))" }}
+                    dot={{ fill: "var(--chart-3)" }}
                   />
                 </LineChart>
               </ResponsiveContainer>
