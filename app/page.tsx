@@ -35,55 +35,174 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
-// Mock data for the dashboard
-const queueData = [
-  { name: "Mon", pending: 45, processing: 12, completed: 89, failed: 3 },
-  { name: "Tue", pending: 52, processing: 8, completed: 94, failed: 2 },
-  { name: "Wed", pending: 38, processing: 15, completed: 76, failed: 5 },
-  { name: "Thu", pending: 61, processing: 9, completed: 102, failed: 1 },
-  { name: "Fri", pending: 43, processing: 11, completed: 87, failed: 4 },
-  { name: "Sat", pending: 29, processing: 6, completed: 65, failed: 2 },
-  { name: "Sun", pending: 35, processing: 7, completed: 71, failed: 3 },
+// Utility functions for generating streaming/dynamic data
+const randomInRange = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+const randomFloat = (min: number, max: number) => Math.random() * (max - min) + min;
+
+// Generate initial data
+const generateQueueData = () => [
+  { name: "Mon", pending: randomInRange(30, 60), processing: randomInRange(5, 20), completed: randomInRange(70, 110), failed: randomInRange(1, 6) },
+  { name: "Tue", pending: randomInRange(30, 60), processing: randomInRange(5, 20), completed: randomInRange(70, 110), failed: randomInRange(1, 6) },
+  { name: "Wed", pending: randomInRange(30, 60), processing: randomInRange(5, 20), completed: randomInRange(70, 110), failed: randomInRange(1, 6) },
+  { name: "Thu", pending: randomInRange(30, 60), processing: randomInRange(5, 20), completed: randomInRange(70, 110), failed: randomInRange(1, 6) },
+  { name: "Fri", pending: randomInRange(30, 60), processing: randomInRange(5, 20), completed: randomInRange(70, 110), failed: randomInRange(1, 6) },
+  { name: "Sat", pending: randomInRange(30, 60), processing: randomInRange(5, 20), completed: randomInRange(70, 110), failed: randomInRange(1, 6) },
+  { name: "Sun", pending: randomInRange(30, 60), processing: randomInRange(5, 20), completed: randomInRange(70, 110), failed: randomInRange(1, 6) },
 ];
 
-const tokenUsageData = [
-  { time: "00:00", input: 1200, output: 800 },
-  { time: "04:00", input: 1800, output: 1200 },
-  { time: "08:00", input: 2400, output: 1600 },
-  { time: "12:00", input: 3200, output: 2100 },
-  { time: "16:00", input: 2800, output: 1900 },
-  { time: "20:00", input: 2200, output: 1500 },
+const generateTokenUsageData = () => [
+  { time: "00:00", input: randomInRange(1000, 1500), output: randomInRange(600, 1000) },
+  { time: "04:00", input: randomInRange(1500, 2000), output: randomInRange(1000, 1400) },
+  { time: "08:00", input: randomInRange(2000, 2800), output: randomInRange(1300, 1800) },
+  { time: "12:00", input: randomInRange(2800, 3500), output: randomInRange(1800, 2300) },
+  { time: "16:00", input: randomInRange(2500, 3200), output: randomInRange(1600, 2100) },
+  { time: "20:00", input: randomInRange(2000, 2600), output: randomInRange(1200, 1700) },
 ];
 
-const processingStages = [
-  { name: "Ingestion", value: 25, color: "var(--chart-1)" },
-  { name: "Chunking", value: 20, color: "var(--chart-2)" },
-  { name: "Embedding", value: 30, color: "var(--chart-3)" },
-  { name: "Indexing", value: 25, color: "var(--chart-4)" },
-];
+const generateProcessingStages = () => {
+  const total = 100;
+  const ingestion = randomInRange(20, 35);
+  const chunking = randomInRange(15, 25);
+  const embedding = randomInRange(25, 40);
+  const indexing = total - ingestion - chunking - embedding;
+  
+  return [
+    { name: "Ingestion", value: ingestion, color: "var(--chart-1)" },
+    { name: "Chunking", value: chunking, color: "var(--chart-2)" },
+    { name: "Embedding", value: embedding, color: "var(--chart-3)" },
+    { name: "Indexing", value: Math.max(0, indexing), color: "var(--chart-4)" },
+  ];
+};
 
-const requestMetrics = [
-  { time: "00:00", requests: 45, latency: 120 },
-  { time: "04:00", requests: 32, latency: 95 },
-  { time: "08:00", requests: 78, latency: 140 },
-  { time: "12:00", requests: 95, latency: 160 },
-  { time: "16:00", requests: 87, latency: 135 },
-  { time: "20:00", requests: 62, latency: 110 },
+const generateRequestMetrics = () => [
+  { time: "00:00", requests: randomInRange(30, 60), latency: randomInRange(100, 150) },
+  { time: "04:00", requests: randomInRange(20, 45), latency: randomInRange(80, 120) },
+  { time: "08:00", requests: randomInRange(60, 90), latency: randomInRange(120, 160) },
+  { time: "12:00", requests: randomInRange(80, 110), latency: randomInRange(140, 180) },
+  { time: "16:00", requests: randomInRange(70, 100), latency: randomInRange(120, 160) },
+  { time: "20:00", requests: randomInRange(50, 80), latency: randomInRange(90, 130) },
 ];
 
 export default function RAGDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
-
+  const [mounted, setMounted] = useState(false);
+  
+  // Streaming data state
+  const [queueData, setQueueData] = useState(() => generateQueueData());
+  const [tokenUsageData, setTokenUsageData] = useState(() => generateTokenUsageData());
+  const [processingStages, setProcessingStages] = useState(() => generateProcessingStages());
+  const [requestMetrics, setRequestMetrics] = useState(() => generateRequestMetrics());
+  
+  // Key metrics state
+  const [documentsInQueue, setDocumentsInQueue] = useState(1247);
+  const [processingRate, setProcessingRate] = useState(94.2);
+  const [tokenUsage, setTokenUsage] = useState(2.4);
+  const [activeRequests, setActiveRequests] = useState(87);
+  const [highPriorityCount, setHighPriorityCount] = useState(3);
+  
+  // System metrics state
+  const [cpuUsage, setCpuUsage] = useState(67);
+  const [memoryUsage, setMemoryUsage] = useState(84);
+  const [storageUsage, setStorageUsage] = useState(45);
+  
+  // Handle client-side mounting to prevent hydration issues
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Update clock every second
+  useEffect(() => {
+    if (!mounted) return;
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [mounted]);
+
+  // Stream data updates every 3 seconds
+  useEffect(() => {
+    if (!mounted) return;
+    const streamingTimer = setInterval(() => {
+      // Update key metrics with small random changes
+      setDocumentsInQueue(prev => Math.max(1000, prev + randomInRange(-50, 50)));
+      setProcessingRate(prev => Math.max(85, Math.min(99, prev + randomFloat(-2, 2))));
+      setTokenUsage(prev => Math.max(1.5, prev + randomFloat(-0.3, 0.3)));
+      setActiveRequests(prev => Math.max(50, prev + randomInRange(-10, 10)));
+      setHighPriorityCount(prev => Math.max(0, Math.min(10, prev + randomInRange(-2, 2))));
+      
+      // Update system metrics
+      setCpuUsage(prev => Math.max(40, Math.min(95, prev + randomInRange(-5, 5))));
+      setMemoryUsage(prev => Math.max(60, Math.min(95, prev + randomInRange(-3, 3))));
+      setStorageUsage(prev => Math.max(30, Math.min(80, prev + randomInRange(-2, 2))));
+      
+      // Update chart data less frequently (every other update)
+      if (Math.random() > 0.5) {
+        setQueueData(generateQueueData());
+        setTokenUsageData(generateTokenUsageData());
+        setProcessingStages(generateProcessingStages());
+        setRequestMetrics(generateRequestMetrics());
+      }
+    }, 3000);
+
+    return () => clearInterval(streamingTimer);
+  }, [mounted]);
 
   const handleRefresh = () => {
     setIsRefreshing(true);
+    // Force refresh all data
+    setQueueData(generateQueueData());
+    setTokenUsageData(generateTokenUsageData());
+    setProcessingStages(generateProcessingStages());
+    setRequestMetrics(generateRequestMetrics());
+    
+    setDocumentsInQueue(randomInRange(1000, 1500));
+    setProcessingRate(randomFloat(90, 98));
+    setTokenUsage(randomFloat(2, 3));
+    setActiveRequests(randomInRange(70, 100));
+    setHighPriorityCount(randomInRange(1, 8));
+    
+    setCpuUsage(randomInRange(50, 85));
+    setMemoryUsage(randomInRange(70, 90));
+    setStorageUsage(randomInRange(35, 65));
+    
     setTimeout(() => setIsRefreshing(false), 2000);
   };
+
+  // Show static content until mounted to prevent hydration issues
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="border-b border-border bg-card">
+          <div className="flex h-16 items-center justify-between px-6">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Database className="h-6 w-6 text-primary" />
+                <h1 className="text-xl font-bold">RAG Pipeline Monitor</h1>
+              </div>
+              <Badge variant="secondary" className="text-xs animate-pulse">
+                Live
+              </Badge>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-muted-foreground">Loading...</span>
+              <Button variant="outline" size="sm" disabled>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </Button>
+            </div>
+          </div>
+        </header>
+        <div className="p-6">
+          <div className="text-center text-muted-foreground">
+            Initializing streaming dashboard...
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -95,7 +214,7 @@ export default function RAGDashboard() {
               <Database className="h-6 w-6 text-primary" />
               <h1 className="text-xl font-bold">RAG Pipeline Monitor</h1>
             </div>
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="text-xs animate-pulse">
               Live
             </Badge>
           </div>
@@ -133,7 +252,9 @@ export default function RAGDashboard() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-chart-2">1,247</div>
+              <div className="text-2xl font-bold text-chart-2 transition-all duration-500">
+                {documentsInQueue.toLocaleString()}
+              </div>
               <p className="text-xs text-muted-foreground">
                 <TrendingUp className="inline h-3 w-3 mr-1" />
                 +12% from yesterday
@@ -149,7 +270,9 @@ export default function RAGDashboard() {
               <Activity className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-chart-1">94.2%</div>
+              <div className="text-2xl font-bold text-chart-1 transition-all duration-500">
+                {processingRate.toFixed(1)}%
+              </div>
               <p className="text-xs text-muted-foreground">
                 <CheckCircle className="inline h-3 w-3 mr-1" />
                 Success rate
@@ -163,7 +286,9 @@ export default function RAGDashboard() {
               <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-chart-5">2.4M</div>
+              <div className="text-2xl font-bold text-chart-5 transition-all duration-500">
+                {tokenUsage.toFixed(1)}M
+              </div>
               <p className="text-xs text-muted-foreground">
                 <Clock className="inline h-3 w-3 mr-1" />
                 Today&apos;s consumption
@@ -179,9 +304,12 @@ export default function RAGDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-chart-4">87</div>
+              <div className="text-2xl font-bold text-chart-4 transition-all duration-500">
+                {activeRequests}
+              </div>
               <p className="text-xs text-muted-foreground">
-                <AlertTriangle className="inline h-3 w-3 mr-1" />3 high priority
+                <AlertTriangle className="inline h-3 w-3 mr-1" />
+                {highPriorityCount} high priority
               </p>
             </CardContent>
           </Card>
@@ -363,23 +491,23 @@ export default function RAGDashboard() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">CPU Usage</span>
-                  <span className="text-sm text-muted-foreground">67%</span>
+                  <span className="text-sm text-muted-foreground">{cpuUsage}%</span>
                 </div>
-                <Progress value={67} className="h-2" />
+                <Progress value={cpuUsage} className="h-2 transition-all duration-700" />
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Memory Usage</span>
-                  <span className="text-sm text-muted-foreground">84%</span>
+                  <span className="text-sm text-muted-foreground">{memoryUsage}%</span>
                 </div>
-                <Progress value={84} className="h-2" />
+                <Progress value={memoryUsage} className="h-2 transition-all duration-700" />
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Storage Usage</span>
-                  <span className="text-sm text-muted-foreground">45%</span>
+                  <span className="text-sm text-muted-foreground">{storageUsage}%</span>
                 </div>
-                <Progress value={45} className="h-2" />
+                <Progress value={storageUsage} className="h-2 transition-all duration-700" />
               </div>
             </div>
           </CardContent>
