@@ -31,7 +31,6 @@ import {
   TrendingUp,
   AlertTriangle,
   RefreshCw,
-  Settings,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -113,10 +112,6 @@ export default function RAGDashboard() {
                 className={`h-4 w-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`}
               />
               Refresh
-            </Button>
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
             </Button>
           </div>
         </div>
